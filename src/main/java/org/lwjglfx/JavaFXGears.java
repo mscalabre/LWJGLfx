@@ -49,6 +49,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.lwjglfx.util.LWJGLUtils;
 
 /** The JavaFX application entry point */
 public class JavaFXGears extends Application {
@@ -65,8 +66,7 @@ public class JavaFXGears extends Application {
 	@Override
 	public void start(final Stage stage) {
                 
-            
-                System.setProperty("org.lwjgl.librarypath", new File(new File("target"), "natives").getAbsolutePath());
+                LWJGLUtils.bindNativePath();
                 
                 
 		stage.setTitle("JavaFX Window");

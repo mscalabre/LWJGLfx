@@ -155,109 +155,12 @@ public class GUIController implements Initializable {
 			});
 	}
 
-	private StreamHandler getReadHandler() {
-		return new StreamHandler() {
-
-			private WritableImage renderImage;
-
-			private long frame;
-			private long lastUpload;
-
-			{
-				new AnimationTimer() {
-					@Override
-					public void handle(final long now) {
-						frame++;
-					}
-				}.start();
-			}
-
-			public int getWidth() {
-				return (int)gearsView.getFitWidth();
-			}
-
-			public int getHeight() {
-				return (int)gearsView.getFitHeight();
-			}
-
-			public void process(final int width, final int height, final ByteBuffer data, final int stride, final Semaphore signal) {
-				// This method runs in the background rendering thread
-				Platform.runLater(new Runnable() {
-					public void run() {
-						try {
-							// If we're quitting, discard update
-							if ( !gearsView.isVisible() )
-								return;
-
-							// Detect resize and recreate the image
-							if ( renderImage == null || (int)renderImage.getWidth() != width || (int)renderImage.getHeight() != height ) {
-								renderImage = new WritableImage(width, height);
-								gearsView.setImage(renderImage);
-							}
-
-							// Throttling, only update the JavaFX view once per frame.
-							// *NOTE*: The +1 is weird here, but apparently setPixels triggers a new pulse within the current frame.
-							// If we ignore that, we'd get a) worse performance from uploading double the frames and b) exceptions
-							// on certain configurations (e.g. Nvidia GPU with the D3D pipeline).
-							if ( frame <= lastUpload + 1 )
-								return;
-
-							lastUpload = frame;
-
-							// Upload the image to JavaFX
-							PixelWriter pw = renderImage.getPixelWriter();
-							pw.setPixels(0, 0, width, height, pw.getPixelFormat(), data, stride);
-						} finally {
-							// Notify the render thread that we're done processing
-							signal.release();
-						}
-					}
-				});
-			}
-		};
-	}
-
-	private StreamHandler getWriteHandler() {
-		return new StreamHandler() {
-
-			private WritableImage webImage;
-
-			public int getWidth() {
-				return (int)webView.getWidth();
-			}
-
-			public int getHeight() {
-				return (int)webView.getHeight();
-			}
-
-			public void process(final int width, final int height, final ByteBuffer buffer, final int stride, final Semaphore signal) {
-				// This method runs in the background rendering thread
-				Platform.runLater(new Runnable() {
-					public void run() {
-						if ( webImage == null || webImage.getWidth() != width || webImage.getHeight() != height )
-							webImage = new WritableImage(width, height);
-
-						webView.snapshot(new Callback<SnapshotResult, Void>() {
-							public Void call(final SnapshotResult snapshotResult) {
-								snapshotResult.getImage().getPixelReader().getPixels(0, 0, width, height, PixelFormat.getByteBgraPreInstance(), buffer, stride);
-
-								signal.release();
-								return null;
-
-							}
-						}, new SnapshotParameters(), webImage);
-					}
-				});
-			}
-		};
-	}
-
 	// This method will run in the background rendering thread
 	void runGears(final CountDownLatch runningLatch) {
 		try {
 			gears = new Gears(
-				getReadHandler(),
-				getWriteHandler()
+				StreamUtil.getReadHandler(this.gearsView),
+				StreamUtil.getWriteHandler(this.webView)
 			);
 		} catch (Throwable t) {
 			t.printStackTrace();

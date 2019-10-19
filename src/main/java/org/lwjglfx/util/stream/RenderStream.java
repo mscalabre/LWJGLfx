@@ -31,6 +31,8 @@
  */
 package org.lwjglfx.util.stream;
 
+import com.jogamp.opengl.GL;
+
 /** @author Spasi */
 public interface RenderStream {
 
@@ -41,5 +43,7 @@ public interface RenderStream {
 	void swapBuffers();
 
 	void destroy();
+        
+        void setGL(GL gl);
 
 }

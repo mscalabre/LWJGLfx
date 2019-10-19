@@ -31,6 +31,7 @@
  */
 package org.lwjglfx.util.stream;
 
+import com.jogamp.opengl.GL;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GLContext;
 
@@ -81,6 +82,13 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
 	public StreamHandler getHandler() {
 		return handler;
 	}
+
+        private GL gl;
+        
+        @Override
+        public void setGL(GL gl) {
+            this.fboUtil.setGL(gl);
+        }
 
 	private void resize(final int width, final int height) {
 		if ( width < 0 || height < 0 )

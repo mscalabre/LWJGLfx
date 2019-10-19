@@ -57,7 +57,7 @@ import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.KHRDebug.*;
 
 /** The LWJGL Gears test, modified to use the PBO reader & writer. */
-final class Gears {
+public final class Gears {
 
 	private static final float VIEW_ROT_X = 10.0f;
 	private static final float VIEW_ROT_Y = 25.0f;
@@ -92,7 +92,11 @@ final class Gears {
 	private final AtomicLong snapshotRequest;
 	private       long       snapshotCurrent;
 
-	Gears(final StreamHandler readHandler, final StreamHandler writeHandler) {
+        public static void setDrawable(Drawable drawable){
+            Gears.drawable = drawable;
+        }
+        
+	public Gears(final StreamHandler readHandler, final StreamHandler writeHandler) {
 		this.pendingRunnables = new ConcurrentLinkedQueue<Runnable>();
 
 		this.fps = new ReadOnlyIntegerWrapper(this, "fps", 0);
@@ -126,8 +130,10 @@ final class Gears {
 		this.renderStreamFactory = StreamUtil.getRenderStreamImplementation();
 		this.renderStream = renderStreamFactory.create(readHandler, 1, transfersToBuffer);
 
-		this.textureStreamFactory = StreamUtil.getTextureStreamImplementation();
-		this.textureStream = textureStreamFactory.create(writeHandler, transfersToBuffer);
+                if(writeHandler!=null){
+                    this.textureStreamFactory = StreamUtil.getTextureStreamImplementation();
+                    this.textureStream = textureStreamFactory.create(writeHandler, transfersToBuffer);
+                }
 
 		this.snapshotRequest = new AtomicLong();
 		this.snapshotCurrent = -1L;
@@ -159,17 +165,19 @@ final class Gears {
 	}
 
 	public void setTextureStreamFactory(final TextureStreamFactory textureStreamFactory) {
-		pendingRunnables.offer(new Runnable() {
-			public void run() {
-				if ( textureStream != null )
-					textureStream.destroy();
+            if(this.textureStream!=null){
+                pendingRunnables.offer(new Runnable() {
+                        public void run() {
+                                if ( textureStream != null )
+                                        textureStream.destroy();
 
-				Gears.this.textureStreamFactory = textureStreamFactory;
+                                Gears.this.textureStreamFactory = textureStreamFactory;
 
-				textureStream = textureStreamFactory.create(textureStream.getHandler(), transfersToBuffer);
-				updateSnapshot();
-			}
-		});
+                                textureStream = textureStreamFactory.create(textureStream.getHandler(), transfersToBuffer);
+                                updateSnapshot();
+                        }
+                });
+            }
 
 	}
 
@@ -236,7 +244,9 @@ final class Gears {
 
 	private void destroy() {
 		renderStream.destroy();
-		textureStream.destroy();
+                if(this.textureStream!=null){
+                    textureStream.destroy();
+                }
 		pbuffer.destroy();
 	}
 
@@ -271,13 +281,17 @@ final class Gears {
 	private void resetStreams() {
 		pendingRunnables.offer(new Runnable() {
 			public void run() {
-				textureStream.destroy();
-				renderStream.destroy();
+                            if(textureStream!=null){
+                                textureStream.destroy();
+                            }
+                            renderStream.destroy();
 
-				renderStream = renderStreamFactory.create(renderStream.getHandler(), samples, transfersToBuffer);
-				textureStream = textureStreamFactory.create(textureStream.getHandler(), transfersToBuffer);
+                            renderStream = renderStreamFactory.create(renderStream.getHandler(), samples, transfersToBuffer);
+                            if(textureStream!=null){
+                                textureStream = textureStreamFactory.create(textureStream.getHandler(), transfersToBuffer);
+                            }
 
-				updateSnapshot();
+                            updateSnapshot();
 			}
 		});
 	}
@@ -289,6 +303,14 @@ final class Gears {
 			runnable.run();
 	}
 
+        public RenderStream getRenderStream() {
+            return renderStream;
+        }
+
+        public TextureStream getTextureStream() {
+            return textureStream;
+        }
+        
 	private void loop(final CountDownLatch running) {
 		final long FPS_UPD_INTERVAL = 1 * (1000L * 1000L * 1000L);
 
@@ -304,11 +326,13 @@ final class Gears {
 			drainPendingActionsQueue();
 
 			final long snapshotRequestID = snapshotRequest.get();
-			if ( snapshotCurrent < snapshotRequestID ) {
-				textureStream.snapshot();
-				snapshotCurrent = snapshotRequestID;
-			}
-			textureStream.tick();
+                        if(textureStream!=null){
+                            if ( snapshotCurrent < snapshotRequestID ) {
+                                    textureStream.snapshot();
+                                    snapshotCurrent = snapshotRequestID;
+                            }
+                            textureStream.tick();
+                        }
 
 			renderStream.bind();
 
@@ -322,9 +346,11 @@ final class Gears {
 			glDisable(GL_LIGHTING);
 			glEnable(GL_TEXTURE_2D);
 
-			textureStream.bind();
-			drawQuad(textureStream.getWidth(), textureStream.getHeight());
-			glBindTexture(GL_TEXTURE_2D, 0);
+                        if(textureStream!=null){
+                            textureStream.bind();
+                            drawQuad(textureStream.getWidth(), textureStream.getHeight());
+                            glBindTexture(GL_TEXTURE_2D, 0);
+                        }
 
 			glDisable(GL_TEXTURE_2D);
 			glEnable(GL_LIGHTING);

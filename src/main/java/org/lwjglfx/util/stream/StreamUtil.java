@@ -31,6 +31,7 @@
  */
 package org.lwjglfx.util.stream;
 
+import com.jogamp.opengl.GL;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.GLSync;
@@ -40,6 +41,17 @@ import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.SnapshotResult;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.web.WebView;
+import javafx.util.Callback;
 
 import sun.misc.Unsafe;
 
@@ -316,18 +328,39 @@ public final class StreamUtil {
 		void blitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter);
 
 		void deleteRenderbuffers(int renderbuffer);
+                
+                void setGL(GL gl);
+                
+                GL getGL();
 
 	}
 
 	static FBOUtil getFBOUtil(final ContextCapabilities caps) {
 		if ( caps.OpenGL30 || caps.GL_ARB_framebuffer_object )
 			return new FBOUtil() {
+                            
+                                private GL gl;
+                            
+                                
+                                public void setGL(GL gl){
+                                    this.gl=gl;
+                                }
+
+                                @Override
+                                public GL getGL() {
+                                    return this.gl;
+                                }
+
 				public int genFramebuffers() {
 					return glGenFramebuffers();
 				}
 
 				public void bindFramebuffer(int target, int framebuffer) {
-					glBindFramebuffer(target, framebuffer);
+                                        if(this.gl!=null){
+                                            this.gl.glBindFramebuffer(target, framebuffer);
+                                        }else{
+                                            glBindFramebuffer(target, framebuffer);
+                                        }
 				}
 
 				public void framebufferTexture2D(int target, int attachment, int textarget, int texture, int level) {
@@ -368,6 +401,19 @@ public final class StreamUtil {
 			};
 		else if ( caps.GL_EXT_framebuffer_object )
 			return new FBOUtil() {
+                            
+                                private GL gl;
+                            
+                                
+                                public void setGL(GL gl){
+                                    this.gl=gl;
+                                }
+
+                                @Override
+                                public GL getGL() {
+                                    return this.gl;
+                                }
+                                
 				public int genFramebuffers() {
 					return glGenFramebuffersEXT();
 				}
@@ -414,6 +460,104 @@ public final class StreamUtil {
 			};
 		else
 			throw new UnsupportedOperationException("Framebuffer object is not available.");
+	}
+
+    
+	public static StreamHandler getReadHandler(ImageView gearsView) {
+		return new StreamHandler() {
+
+			private WritableImage renderImage;
+
+			private long frame;
+			private long lastUpload;
+
+			{
+				new AnimationTimer() {
+					@Override
+					public void handle(final long now) {
+						frame++;
+					}
+				}.start();
+			}
+
+			public int getWidth() {
+				return (int)gearsView.getFitWidth();
+			}
+
+			public int getHeight() {
+				return (int)gearsView.getFitHeight();
+			}
+
+			public void process(final int width, final int height, final ByteBuffer data, final int stride, final Semaphore signal) {
+				// This method runs in the background rendering thread
+				Platform.runLater(new Runnable() {
+					public void run() {
+						try {
+							// If we're quitting, discard update
+							if ( !gearsView.isVisible() )
+								return;
+
+							// Detect resize and recreate the image
+							if ( renderImage == null || (int)renderImage.getWidth() != width || (int)renderImage.getHeight() != height ) {
+								renderImage = new WritableImage(width, height);
+								gearsView.setImage(renderImage);
+							}
+
+							// Throttling, only update the JavaFX view once per frame.
+							// *NOTE*: The +1 is weird here, but apparently setPixels triggers a new pulse within the current frame.
+							// If we ignore that, we'd get a) worse performance from uploading double the frames and b) exceptions
+							// on certain configurations (e.g. Nvidia GPU with the D3D pipeline).
+							if ( frame <= lastUpload + 1 )
+								return;
+
+							lastUpload = frame;
+
+							// Upload the image to JavaFX
+							PixelWriter pw = renderImage.getPixelWriter();
+							pw.setPixels(0, 0, width, height, pw.getPixelFormat(), data, stride);
+						} finally {
+							// Notify the render thread that we're done processing
+							signal.release();
+						}
+					}
+				});
+			}
+		};
+	}
+
+	public static StreamHandler getWriteHandler(WebView webView) {
+		return new StreamHandler() {
+
+			private WritableImage webImage;
+
+			public int getWidth() {
+				return (int)webView.getWidth();
+			}
+
+			public int getHeight() {
+				return (int)webView.getHeight();
+			}
+
+			public void process(final int width, final int height, final ByteBuffer buffer, final int stride, final Semaphore signal) {
+				// This method runs in the background rendering thread
+				Platform.runLater(new Runnable() {
+					public void run() {
+						if ( webImage == null || webImage.getWidth() != width || webImage.getHeight() != height )
+							webImage = new WritableImage(width, height);
+
+						webView.snapshot(new Callback<SnapshotResult, Void>() {
+							public Void call(final SnapshotResult snapshotResult) {
+								snapshotResult.getImage().getPixelReader().getPixels(0, 0, width, height, PixelFormat.getByteBgraPreInstance(), buffer, stride);
+
+								signal.release();
+								return null;
+
+							}
+						}, new SnapshotParameters(), webImage);
+					}
+				});
+			}
+		};
 	}
 
 }

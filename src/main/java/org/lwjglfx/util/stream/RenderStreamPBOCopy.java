@@ -109,7 +109,11 @@ final class RenderStreamPBOCopy extends RenderStreamPBO {
 	}
 
 	protected void destroyObjects() {
-		glDeleteBuffers(devicePBO);
+                if(this.fboUtil.getGL()!=null){
+                    this.fboUtil.getGL().glDeleteBuffers(devicePBO, null);
+                }else{
+                    glDeleteBuffers(devicePBO);
+                }
 		super.destroyObjects();
 	}
 }
