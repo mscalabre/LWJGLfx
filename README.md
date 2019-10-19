@@ -3,7 +3,7 @@
 Based on https://github.com/SkyLandTW/JOGL-FX project.
 
 
-Maven OK but maybe need the following command for first compilation (if mvn is set in your path) : 
+Maven OK but maybe need the following command for the first compilation (if mvn is set in your path) : 
 
 mvn package
 
