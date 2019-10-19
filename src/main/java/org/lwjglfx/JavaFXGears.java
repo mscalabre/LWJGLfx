@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.glfx;
+package org.lwjglfx;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -87,7 +87,7 @@ public class JavaFXGears extends Application {
 			stage.setHeight(screenBounds.getHeight());
 		}
 
-		final URL fxmlURL = getClass().getClassLoader().getResource("org/glfx/gears.fxml");
+		final URL fxmlURL = getClass().getClassLoader().getResource("org/lwjglfx/gears.fxml");
 		final FXMLLoader fxmlLoader = new FXMLLoader(fxmlURL);
 
 		Pane content;

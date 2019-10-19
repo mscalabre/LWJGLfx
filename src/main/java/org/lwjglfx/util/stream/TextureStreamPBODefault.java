@@ -29,34 +29,47 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.glfx.util.stream;
+package org.lwjglfx.util.stream;
+
+import org.lwjgl.opengl.ContextCapabilities;
+import org.lwjglfx.util.stream.StreamUtil.TextureStreamFactory;
 
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL21.*;
 
-/** Base functionality for streaming PBO transfers. */
-abstract class StreamBufferedPBO extends StreamBuffered {
+/** Implements streaming PBO updates to an OpenGL texture. */
+public class TextureStreamPBODefault extends TextureStreamPBO {
 
-	protected final int[] pbos;
-
-	protected StreamBufferedPBO(final StreamHandler handler, final int transfersToBuffer) {
-		super(handler, transfersToBuffer);
-
-		pbos = new int[transfersToBuffer];
-	}
-
-	protected void resizeBuffers(final int height, final int stride, final int pboTarget, final int pboUsage) {
-		final int renderBytes = height * stride;
-
-		for ( int i = 0; i < pbos.length; i++ ) {
-			pbos[i] = glGenBuffers();
-
-			glBindBuffer(pboTarget, pbos[i]);
-			glBufferData(pboTarget, renderBytes, pboUsage);
-
-			pinnedBuffers[i] = null;
+	public static final TextureStreamFactory FACTORY = new TextureStreamFactory("Asynchronous PBO") {
+		public boolean isSupported(final ContextCapabilities caps) {
+			return caps.OpenGL21 || caps.GL_ARB_pixel_buffer_object || caps.GL_EXT_pixel_buffer_object;
 		}
 
-		glBindBuffer(pboTarget, 0);
+		public TextureStream create(final StreamHandler handler, final int transfersToBuffer) {
+			return new TextureStreamPBODefault(handler, transfersToBuffer);
+		}
+	};
+
+	public TextureStreamPBODefault(final StreamHandler handler, final int transfersToBuffer) {
+		super(handler, transfersToBuffer);
+	}
+
+	protected void postProcess(final int index) {
+		glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
+	}
+
+	protected void postUpload(final int index) {
+	}
+
+	public void pinBuffer(final int index) {
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbos[index]);
+		glBufferData(GL_PIXEL_UNPACK_BUFFER, height * stride, GL_STREAM_DRAW); // Orphan previous buffer
+		pinnedBuffers[index] = glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY, height * stride, pinnedBuffers[index]);
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+	}
+
+	public void destroy() {
+		destroyObjects();
 	}
 
 }

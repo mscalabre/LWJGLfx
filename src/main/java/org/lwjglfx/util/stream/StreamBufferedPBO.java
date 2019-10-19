@@ -29,17 +29,34 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.glfx.util.stream;
+package org.lwjglfx.util.stream;
 
-/** @author Spasi */
-public interface RenderStream {
+import static org.lwjgl.opengl.GL15.*;
 
-	StreamHandler getHandler();
+/** Base functionality for streaming PBO transfers. */
+abstract class StreamBufferedPBO extends StreamBuffered {
 
-	void bind();
+	protected final int[] pbos;
 
-	void swapBuffers();
+	protected StreamBufferedPBO(final StreamHandler handler, final int transfersToBuffer) {
+		super(handler, transfersToBuffer);
 
-	void destroy();
+		pbos = new int[transfersToBuffer];
+	}
+
+	protected void resizeBuffers(final int height, final int stride, final int pboTarget, final int pboUsage) {
+		final int renderBytes = height * stride;
+
+		for ( int i = 0; i < pbos.length; i++ ) {
+			pbos[i] = glGenBuffers();
+
+			glBindBuffer(pboTarget, pbos[i]);
+			glBufferData(pboTarget, renderBytes, pboUsage);
+
+			pinnedBuffers[i] = null;
+		}
+
+		glBindBuffer(pboTarget, 0);
+	}
 
 }

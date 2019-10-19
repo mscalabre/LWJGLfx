@@ -29,11 +29,11 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.glfx.util.stream;
+package org.lwjglfx.util.stream;
 
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GLSync;
-import org.glfx.util.stream.StreamUtil.TextureStreamFactory;
+import org.lwjglfx.util.stream.StreamUtil.TextureStreamFactory;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL21.*;

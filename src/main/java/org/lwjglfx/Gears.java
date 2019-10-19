@@ -29,17 +29,17 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.glfx;
+package org.lwjglfx;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.*;
-import org.glfx.util.stream.RenderStream;
-import org.glfx.util.stream.StreamHandler;
-import org.glfx.util.stream.StreamUtil;
-import org.glfx.util.stream.StreamUtil.RenderStreamFactory;
-import org.glfx.util.stream.StreamUtil.TextureStreamFactory;
-import org.glfx.util.stream.TextureStream;
+import org.lwjglfx.util.stream.RenderStream;
+import org.lwjglfx.util.stream.StreamHandler;
+import org.lwjglfx.util.stream.StreamUtil;
+import org.lwjglfx.util.stream.StreamUtil.RenderStreamFactory;
+import org.lwjglfx.util.stream.StreamUtil.TextureStreamFactory;
+import org.lwjglfx.util.stream.TextureStream;
 
 import java.nio.FloatBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;

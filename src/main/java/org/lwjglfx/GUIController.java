@@ -1,4 +1,4 @@
-package org.glfx;/*
+package org.lwjglfx;/*
  * Copyright (c) 2002-2012 LWJGL Project
  * All rights reserved.
  *
@@ -30,10 +30,10 @@ package org.glfx;/*
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.glfx.util.stream.StreamHandler;
-import org.glfx.util.stream.StreamUtil;
-import org.glfx.util.stream.StreamUtil.RenderStreamFactory;
-import org.glfx.util.stream.StreamUtil.TextureStreamFactory;
+import org.lwjglfx.util.stream.StreamHandler;
+import org.lwjglfx.util.stream.StreamUtil;
+import org.lwjglfx.util.stream.StreamUtil.RenderStreamFactory;
+import org.lwjglfx.util.stream.StreamUtil.TextureStreamFactory;
 
 import java.net.URL;
 import java.nio.ByteBuffer;

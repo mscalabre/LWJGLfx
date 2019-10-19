@@ -29,12 +29,12 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.glfx.util.stream;
+package org.lwjglfx.util.stream;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GLContext;
-import org.glfx.util.stream.StreamUtil.RenderStreamFactory;
+import org.lwjglfx.util.stream.StreamUtil.RenderStreamFactory;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;

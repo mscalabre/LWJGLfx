@@ -29,18 +29,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.glfx.util.stream;
-
-import java.nio.ByteBuffer;
-import java.util.concurrent.Semaphore;
+package org.lwjglfx.util.stream;
 
 /** @author Spasi */
-public interface StreamHandler {
+public interface TextureStream {
+
+	StreamHandler getHandler();
 
 	int getWidth();
 
 	int getHeight();
 
-	void process(final int width, final int height, ByteBuffer data, final int stride, Semaphore signal);
+	void snapshot();
+
+	void tick();
+
+	void bind();
+
+	void destroy();
 
 }
