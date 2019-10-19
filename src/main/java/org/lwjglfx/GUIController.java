@@ -106,7 +106,7 @@ public class GUIController implements Initializable {
 	public void initialize(final URL url, final ResourceBundle resourceBundle) {
 		gearsView.fitWidthProperty().bind(gearsRoot.widthProperty());
 		gearsView.fitHeightProperty().bind(gearsRoot.heightProperty());
-
+                
 		final StringBuilder info = new StringBuilder(128);
 		info
 			.append(System.getProperty("java.vm.name"))
