@@ -328,39 +328,19 @@ public final class StreamUtil {
 		void blitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter);
 
 		void deleteRenderbuffers(int renderbuffer);
-                
-                void setGL(GL gl);
-                
-                GL getGL();
 
 	}
 
 	static FBOUtil getFBOUtil(final ContextCapabilities caps) {
 		if ( caps.OpenGL30 || caps.GL_ARB_framebuffer_object )
 			return new FBOUtil() {
-                            
-                                private GL gl;
-                            
-                                
-                                public void setGL(GL gl){
-                                    this.gl=gl;
-                                }
-
-                                @Override
-                                public GL getGL() {
-                                    return this.gl;
-                                }
 
 				public int genFramebuffers() {
 					return glGenFramebuffers();
 				}
 
 				public void bindFramebuffer(int target, int framebuffer) {
-                                        if(this.gl!=null){
-                                            this.gl.glBindFramebuffer(target, framebuffer);
-                                        }else{
-                                            glBindFramebuffer(target, framebuffer);
-                                        }
+                                        glBindFramebuffer(target, framebuffer);
 				}
 
 				public void framebufferTexture2D(int target, int attachment, int textarget, int texture, int level) {
@@ -401,18 +381,6 @@ public final class StreamUtil {
 			};
 		else if ( caps.GL_EXT_framebuffer_object )
 			return new FBOUtil() {
-                            
-                                private GL gl;
-                            
-                                
-                                public void setGL(GL gl){
-                                    this.gl=gl;
-                                }
-
-                                @Override
-                                public GL getGL() {
-                                    return this.gl;
-                                }
                                 
 				public int genFramebuffers() {
 					return glGenFramebuffersEXT();
@@ -481,11 +449,11 @@ public final class StreamUtil {
 			}
 
 			public int getWidth() {
-				return (int)gearsView.getFitWidth();
+				return (int)gearsView.getBoundsInLocal().getWidth();
 			}
 
 			public int getHeight() {
-				return (int)gearsView.getFitHeight();
+				return (int)gearsView.getBoundsInLocal().getHeight();
 			}
 
 			public void process(final int width, final int height, final ByteBuffer data, final int stride, final Semaphore signal) {

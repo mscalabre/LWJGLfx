@@ -31,6 +31,7 @@
  */
 package org.lwjglfx.util.stream;
 
+import com.jogamp.opengl.GL;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GLContext;

@@ -70,7 +70,7 @@ abstract class StreamBuffered {
 
 		processingState = new BitSet(transfersToBuffer);
 	}
-
+        
 	protected void waitForProcessingToComplete(final int index) {
 		final Semaphore s = semaphores[index];
 		// Early-out: start-up or handler has finished processing

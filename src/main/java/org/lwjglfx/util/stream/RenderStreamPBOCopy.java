@@ -64,7 +64,7 @@ final class RenderStreamPBOCopy extends RenderStreamPBO {
 	protected void resizeBuffers(final int height, final int stride) {
 		super.resizeBuffers(height, stride);
 
-		devicePBO = glGenBuffers();
+                devicePBO = glGenBuffers();
 
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, devicePBO);
 		glBufferData(GL_PIXEL_PACK_BUFFER, height * stride, GL_STREAM_COPY); // Should allocate device memory
@@ -109,11 +109,7 @@ final class RenderStreamPBOCopy extends RenderStreamPBO {
 	}
 
 	protected void destroyObjects() {
-                if(this.fboUtil.getGL()!=null){
-                    this.fboUtil.getGL().glDeleteBuffers(devicePBO, null);
-                }else{
-                    glDeleteBuffers(devicePBO);
-                }
+                glDeleteBuffers(devicePBO);
 		super.destroyObjects();
 	}
 }

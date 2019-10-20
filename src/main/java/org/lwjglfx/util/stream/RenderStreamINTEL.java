@@ -39,6 +39,9 @@ import org.lwjglfx.util.stream.StreamUtil.RenderStreamFactory;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.lwjgl.LWJGLException;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
@@ -105,8 +108,15 @@ final class RenderStreamINTEL extends StreamBuffered implements RenderStream {
         
         @Override
         public void setGL(GL gl) {
-            this.fboUtil.setGL(gl);
+            try {
+                if(gl!=null){
+                    GLContext.useContext(gl.getContext());
+                }
+            } catch (LWJGLException ex) {
+                ex.printStackTrace();
+            }
         }
+        
 
 	private void resize(final int width, final int height) {
 		if ( width < 0 || height < 0 )

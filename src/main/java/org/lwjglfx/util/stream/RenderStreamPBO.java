@@ -32,6 +32,9 @@
 package org.lwjglfx.util.stream;
 
 import com.jogamp.opengl.GL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GLContext;
 
@@ -87,8 +90,16 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
         
         @Override
         public void setGL(GL gl) {
-            this.fboUtil.setGL(gl);
+            try {
+                if(gl!=null){
+                    GLContext.useContext(gl.getContext());
+                }
+            } catch (LWJGLException ex) {
+                ex.printStackTrace();
+            }
         }
+
+
 
 	private void resize(final int width, final int height) {
 		if ( width < 0 || height < 0 )
@@ -263,16 +274,16 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
 	protected void destroyObjects() {
 		for ( int i = 0; i < semaphores.length; i++ ) {
 			if ( processingState.get(i) ) {
-				glBindBuffer(GL_PIXEL_PACK_BUFFER, pbos[i]);
+                                glBindBuffer(GL_PIXEL_PACK_BUFFER, pbos[i]);
 				waitForProcessingToComplete(i);
 			}
 		}
 
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
 		for ( int i = 0; i < pbos.length; i++ ) {
 			if ( pbos[i] != 0 )
-				glDeleteBuffers(pbos[i]);
+                            glDeleteBuffers(pbos[i]);
 		}
 
 		if ( msaaResolveBuffer != 0 ) {
@@ -289,6 +300,7 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
 				fboUtil.deleteRenderbuffers(rgbaBuffer);
 		}
 	}
+        
 
 	public void destroy() {
 		destroyObjects();

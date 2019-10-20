@@ -91,10 +91,6 @@ public final class Gears {
 
 	private final AtomicLong snapshotRequest;
 	private       long       snapshotCurrent;
-
-        public static void setDrawable(Drawable drawable){
-            Gears.drawable = drawable;
-        }
         
 	public Gears(final StreamHandler readHandler, final StreamHandler writeHandler) {
 		this.pendingRunnables = new ConcurrentLinkedQueue<Runnable>();
@@ -181,7 +177,7 @@ public final class Gears {
 
 	}
 
-	private void init() {
+	public void init() {
 		// setup ogl
 		FloatBuffer pos = BufferUtils.createFloatBuffer(4).put(new float[] { 5.0f, 5.0f, 10.0f, 0.0f });
 		FloatBuffer red = BufferUtils.createFloatBuffer(4).put(new float[] { 0.8f, 0.1f, 0.0f, 1.0f });
@@ -311,7 +307,7 @@ public final class Gears {
             return textureStream;
         }
         
-	private void loop(final CountDownLatch running) {
+	public void loop(final CountDownLatch running) {
 		final long FPS_UPD_INTERVAL = 1 * (1000L * 1000L * 1000L);
 
 		long nextFPSUpdateTime = System.nanoTime() + FPS_UPD_INTERVAL;
@@ -321,7 +317,7 @@ public final class Gears {
 		double timeDelta = 0.0;
 
 		while ( 0 < running.getCount() ) {
-			angle += 0.1f * timeDelta; // 0.1 degrees per ms == 100 degrees per second
+                        angle += 0.1f * timeDelta; // 0.1 degrees per ms == 100 degrees per second
 
 			drainPendingActionsQueue();
 
@@ -336,15 +332,15 @@ public final class Gears {
 
 			renderStream.bind();
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glPushMatrix();
-			glRotatef(VIEW_ROT_X, 1.0f, 0.0f, 0.0f);
-			glRotatef(VIEW_ROT_Y, 0.0f, 1.0f, 0.0f);
-			glRotatef(VIEW_ROT_Z, 0.0f, 0.0f, 1.0f);
+                        glPushMatrix();
+                        glRotatef(VIEW_ROT_X, 1.0f, 0.0f, 0.0f);
+                        glRotatef(VIEW_ROT_Y, 0.0f, 1.0f, 0.0f);
+                        glRotatef(VIEW_ROT_Z, 0.0f, 0.0f, 1.0f);
 
-			glDisable(GL_LIGHTING);
-			glEnable(GL_TEXTURE_2D);
+                        glDisable(GL_LIGHTING);
+                        glEnable(GL_TEXTURE_2D);
 
                         if(textureStream!=null){
                             textureStream.bind();
@@ -352,32 +348,32 @@ public final class Gears {
                             glBindTexture(GL_TEXTURE_2D, 0);
                         }
 
-			glDisable(GL_TEXTURE_2D);
-			glEnable(GL_LIGHTING);
+                        glDisable(GL_TEXTURE_2D);
+                        glEnable(GL_LIGHTING);
 
-			//for ( int i = -4; i < 4; i++ )
-			int i = 0;
-			{
-				glPushMatrix();
-				glTranslatef(-3.0f, -2.0f, i);
-				glRotatef(angle, 0.0f, 0.0f, 1.0f);
-				glCallList(gear1);
-				glPopMatrix();
+                        //for ( int i = -4; i < 4; i++ )
+                        int i = 0;
+                        {
+                                glPushMatrix();
+                                glTranslatef(-3.0f, -2.0f, i);
+                                glRotatef(angle, 0.0f, 0.0f, 1.0f);
+                                glCallList(gear1);
+                                glPopMatrix();
 
-				glPushMatrix();
-				glTranslatef(3.1f, -2.0f, i);
-				glRotatef(-2.0f * angle - 9.0f, 0.0f, 0.0f, 1.0f);
-				glCallList(gear2);
-				glPopMatrix();
+                                glPushMatrix();
+                                glTranslatef(3.1f, -2.0f, i);
+                                glRotatef(-2.0f * angle - 9.0f, 0.0f, 0.0f, 1.0f);
+                                glCallList(gear2);
+                                glPopMatrix();
 
-				glPushMatrix();
-				glTranslatef(-3.1f, 4.2f, i);
-				glRotatef(-2.0f * angle - 25.0f, 0.0f, 0.0f, 1.0f);
-				glCallList(gear3);
-				glPopMatrix();
-			}
+                                glPushMatrix();
+                                glTranslatef(-3.1f, 4.2f, i);
+                                glRotatef(-2.0f * angle - 25.0f, 0.0f, 0.0f, 1.0f);
+                                glCallList(gear3);
+                                glPopMatrix();
+                        }
 
-			glPopMatrix();
+                        glPopMatrix();
 
 			renderStream.swapBuffers();
 

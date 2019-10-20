@@ -31,6 +31,7 @@
  */
 package org.lwjglfx.util.stream;
 
+import com.jogamp.opengl.GL;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.MemoryUtil;
 import org.lwjgl.opengl.ContextCapabilities;
@@ -65,7 +66,7 @@ final class RenderStreamPBOAMD extends RenderStreamPBO {
 
 		fences = new GLSync[this.transfersToBuffer];
 	}
-
+    
 	protected void resizeBuffers(final int height, final int stride) {
 		final int renderBytes = height * stride;
 

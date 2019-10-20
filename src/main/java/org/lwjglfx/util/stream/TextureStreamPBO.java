@@ -31,6 +31,7 @@
  */
 package org.lwjglfx.util.stream;
 
+import com.jogamp.opengl.GL;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL15.*;
