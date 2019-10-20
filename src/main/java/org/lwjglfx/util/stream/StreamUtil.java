@@ -31,7 +31,9 @@
  */
 package org.lwjglfx.util.stream;
 
-import com.jogamp.opengl.GL;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.GLSync;
@@ -42,8 +44,11 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.SnapshotResult;
 import javafx.scene.image.ImageView;
@@ -52,6 +57,9 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
+import javax.imageio.ImageIO;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.ContextAttribs;
 
 import sun.misc.Unsafe;
 
@@ -63,6 +71,7 @@ import static org.lwjgl.opengl.GL11.glGetInteger;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.*;
+import org.lwjgl.opengl.Pbuffer;
 
 /** @author Spasi */
 public final class StreamUtil {
@@ -162,6 +171,36 @@ public final class StreamUtil {
 			throw new UnsupportedOperationException("A supported TextureStream implementation could not be found.");
 
 		return list.get(0);
+	}
+
+	public static RenderStreamFactory getRenderStreamImplementation(com.jogamp.opengl.GLContext context) {
+                try {
+                    Pbuffer pbuffer = new Pbuffer(1, 1, new org.lwjgl.opengl.PixelFormat(), null, null, new ContextAttribs().withDebug(true));
+                    pbuffer.makeCurrent();
+                    int errorCode = glGetError();
+                    System.out.println("error_1 " + errorCode);
+                    GLContext.useContext(context);
+                    errorCode = glGetError();
+                    System.out.println("error_2 " + errorCode);
+                    glEnable(GL_CULL_FACE);
+                    errorCode = glGetError();
+                    System.out.println("error_3 " + errorCode);
+                    glEnable(GL_LIGHTING);
+                    errorCode = glGetError();
+                    System.out.println("error_4 " + errorCode);
+                    glEnable(GL_LIGHT0);
+                    errorCode = glGetError();
+                    System.out.println("error_5 " + errorCode);
+                    glEnable(GL_DEPTH_TEST);
+                    errorCode = glGetError();
+                    System.out.println("error_6 " + errorCode);
+                    glEnable(GL_NORMALIZE);
+                    errorCode = glGetError();
+                    System.out.println("error_7 " + errorCode);
+                } catch (LWJGLException ex) {
+                    ex.printStackTrace();
+                }
+                return getRenderStreamImplementation();
 	}
 
 	public static List<RenderStreamFactory> getRenderStreamImplementations() {
@@ -458,7 +497,7 @@ public final class StreamUtil {
 
 			public void process(final int width, final int height, final ByteBuffer data, final int stride, final Semaphore signal) {
 				// This method runs in the background rendering thread
-				Platform.runLater(new Runnable() {
+                                Runnable runnable = new Runnable() {
 					public void run() {
 						try {
 							// If we're quitting, discard update
@@ -479,16 +518,28 @@ public final class StreamUtil {
 								return;
 
 							lastUpload = frame;
-
+                                                        
 							// Upload the image to JavaFX
 							PixelWriter pw = renderImage.getPixelWriter();
 							pw.setPixels(0, 0, width, height, pw.getPixelFormat(), data, stride);
+
+                                                        BufferedImage bf = SwingFXUtils.fromFXImage(renderImage, null);
+                                                        try {
+                                                            ImageIO.write(bf, "jpg", new File("testGL.jpg"));
+                                                        } catch (IOException ex) {
+                                                            Logger.getLogger(StreamUtil.class.getName()).log(Level.SEVERE, null, ex);
+                                                        }
 						} finally {
 							// Notify the render thread that we're done processing
 							signal.release();
 						}
 					}
-				});
+				};
+                                if(Platform.isFxApplicationThread()){
+                                    runnable.run();
+                                }else{
+                                    Platform.runLater(runnable);
+                                }
 			}
 		};
 	}
@@ -508,7 +559,7 @@ public final class StreamUtil {
 
 			public void process(final int width, final int height, final ByteBuffer buffer, final int stride, final Semaphore signal) {
 				// This method runs in the background rendering thread
-				Platform.runLater(new Runnable() {
+                                Runnable runnable = new Runnable() {
 					public void run() {
 						if ( webImage == null || webImage.getWidth() != width || webImage.getHeight() != height )
 							webImage = new WritableImage(width, height);
@@ -523,7 +574,12 @@ public final class StreamUtil {
 							}
 						}, new SnapshotParameters(), webImage);
 					}
-				});
+				};
+                                if(Platform.isFxApplicationThread()){
+                                    runnable.run();
+                                }else{
+                                    Platform.runLater(runnable);
+                                }
 			}
 		};
 	}

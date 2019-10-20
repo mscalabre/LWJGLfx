@@ -77,7 +77,7 @@ final class RenderStreamPBODefault extends RenderStreamPBO {
 		// We don't need to manually synchronize here, MapBuffer will block until ReadPixels above has finished.
 		// The buffer will be unmapped in waitForProcessingToComplete
 		pinnedBuffers[index] = glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY, height * stride, pinnedBuffers[index]);
-
+                
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 	}
 

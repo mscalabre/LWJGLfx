@@ -223,7 +223,7 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
 			// We do this to avoid sending an empty buffer for processing, which would cause a visible flicker on resize.
 			copyFrames(renderToPBO, readFromPBO);
 			synchronousFrames--;
-		}
+                }
 
 		// Time to process the readFromPBO
 
@@ -234,12 +234,12 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
 		processingState.set(readFromPBO, true);
 		semaphores[readFromPBO].acquireUninterruptibly();
 
-		handler.process(
-			width, height,
-			pinnedBuffers[readFromPBO],
-			stride,
-			semaphores[readFromPBO]
-		);
+                handler.process(
+                        width, height,
+                        pinnedBuffers[readFromPBO],
+                        stride,
+                        semaphores[readFromPBO]
+                );
 
 		bufferIndex++;
 	}
