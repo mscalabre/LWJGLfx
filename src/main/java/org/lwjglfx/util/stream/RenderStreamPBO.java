@@ -32,8 +32,6 @@
 package org.lwjglfx.util.stream;
 
 import com.jogamp.opengl.GL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.GLContext;
@@ -85,8 +83,6 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
 	public StreamHandler getHandler() {
 		return handler;
 	}
-
-        private GL gl;
         
         @Override
         public void setGL(GL gl) {
