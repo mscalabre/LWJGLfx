@@ -523,12 +523,12 @@ public final class StreamUtil {
 							PixelWriter pw = renderImage.getPixelWriter();
 							pw.setPixels(0, 0, width, height, pw.getPixelFormat(), data, stride);
 
-                                                        BufferedImage bf = SwingFXUtils.fromFXImage(renderImage, null);
-                                                        try {
-                                                            ImageIO.write(bf, "jpg", new File("testGL.jpg"));
-                                                        } catch (IOException ex) {
-                                                            Logger.getLogger(StreamUtil.class.getName()).log(Level.SEVERE, null, ex);
-                                                        }
+//                                                        BufferedImage bf = SwingFXUtils.fromFXImage(renderImage, null);
+//                                                        try {
+//                                                            ImageIO.write(bf, "jpg", new File("testGL.jpg"));
+//                                                        } catch (IOException ex) {
+//                                                            Logger.getLogger(StreamUtil.class.getName()).log(Level.SEVERE, null, ex);
+//                                                        }
 						} finally {
 							// Notify the render thread that we're done processing
 							signal.release();

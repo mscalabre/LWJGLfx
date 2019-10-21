@@ -31,6 +31,7 @@
  */
 package org.lwjglfx;
 
+import com.jogamp.opengl.GL;
 import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -46,6 +47,8 @@ import java.nio.FloatBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -318,7 +321,7 @@ public final class Gears {
         GL11.glClearColor(0.4f, 0.6f, 0.9f, 0f);
          
         // Map the internal OpenGL coordinate system to the entire screen
-        GL11.glViewport(0, 0, 2000, 1000);
+//        GL11.glViewport(0, 0, 2000, 1000);
     }
      
     public void setupQuad() {
@@ -372,8 +375,9 @@ public final class Gears {
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
     }
         public void test(){
+            renderStream.bind();
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-
+            
             // Bind to the VAO that has all the information about the vertices
             GL30.glBindVertexArray(vaoId);
             GL20.glEnableVertexAttribArray(0);
@@ -388,6 +392,7 @@ public final class Gears {
             GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
             GL20.glDisableVertexAttribArray(0);
             GL30.glBindVertexArray(0);
+            renderStream.swapBuffers();
         }
         
 	public void loop(final CountDownLatch running) {
@@ -640,5 +645,22 @@ public final class Gears {
 		}
 		glEnd();
 	}
+
+    public void setGL(GL gl) {
+            try {
+                GLContext.useContext(gl.getContext());
+            } catch (LWJGLException ex) {
+                ex.printStackTrace();
+            }
+    }
+    
+    public boolean contextIsSet(){
+        try{
+            GLContext.getCapabilities();
+        }catch(Exception e){
+            return false;
+        }
+        return true;
+    }
 
 }

@@ -30,20 +30,15 @@ package org.lwjglfx;/*
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.lwjglfx.util.stream.StreamHandler;
 import org.lwjglfx.util.stream.StreamUtil;
 import org.lwjglfx.util.stream.StreamUtil.RenderStreamFactory;
 import org.lwjglfx.util.stream.StreamUtil.TextureStreamFactory;
 
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
-
-import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -54,22 +49,16 @@ import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.SnapshotResult;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
-import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
@@ -162,6 +151,8 @@ public class GUIController implements Initializable {
 				StreamUtil.getReadHandler(this.gearsView),
 				StreamUtil.getWriteHandler(this.webView)
 			);
+                        gears.setupOpenGL();
+                        gears.setupQuad();
 		} catch (Throwable t) {
 			t.printStackTrace();
 			return;

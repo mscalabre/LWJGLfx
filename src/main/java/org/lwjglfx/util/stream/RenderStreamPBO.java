@@ -86,12 +86,17 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
         
         @Override
         public void setGL(GL gl) {
-            try {
-                if(gl!=null){
-                    GLContext.useContext(gl.getContext());
+            try{
+                GLContext.getCapabilities();
+            }catch(Exception e){
+                //On ne donne le context que si il n'y en a pas encore
+                try {
+                    if(gl!=null){
+                        GLContext.useContext(gl.getContext());
+                    }
+                } catch (LWJGLException ex) {
+                    ex.printStackTrace();
                 }
-            } catch (LWJGLException ex) {
-                ex.printStackTrace();
             }
         }
 
