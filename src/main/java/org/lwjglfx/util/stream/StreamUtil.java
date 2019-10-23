@@ -525,7 +525,7 @@ public final class StreamUtil {
 
 //                                                        BufferedImage bf = SwingFXUtils.fromFXImage(renderImage, null);
 //                                                        try {
-//                                                            ImageIO.write(bf, "jpg", new File("testGL.jpg"));
+//                                                            ImageIO.write(bf, "png", new File("testGL.png"));
 //                                                        } catch (IOException ex) {
 //                                                            Logger.getLogger(StreamUtil.class.getName()).log(Level.SEVERE, null, ex);
 //                                                        }
