@@ -31,12 +31,6 @@
  */
 package org.lwjglfx.util.stream;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import org.lwjgl.opengl.ContextCapabilities;
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.opengl.GLSync;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -44,11 +38,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.SnapshotResult;
 import javafx.scene.image.ImageView;
@@ -57,9 +48,9 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
-import javax.imageio.ImageIO;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextAttribs;
+import org.lwjgl.opengl.ContextCapabilities;
 
 import sun.misc.Unsafe;
 
@@ -71,6 +62,8 @@ import static org.lwjgl.opengl.GL11.glGetInteger;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.*;
+import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.GLSync;
 import org.lwjgl.opengl.Pbuffer;
 
 /** @author Spasi */
