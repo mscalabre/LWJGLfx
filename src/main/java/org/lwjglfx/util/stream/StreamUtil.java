@@ -84,7 +84,7 @@ public final class StreamUtil {
 		glBindTexture(GL_TEXTURE_2D, texID);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, (ByteBuffer)null);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, (ByteBuffer)null);//Update from GL_RGBA8 to GL_RGB8 (Conflicting Alpha with render stream
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		return texID;
@@ -478,8 +478,8 @@ public final class StreamUtil {
 						frame++;
 					}
 				}.start();
-			}
-
+                        }
+                                    
 			public int getWidth() {
 				return (int)gearsView.getBoundsInLocal().getWidth();
 			}
@@ -556,7 +556,7 @@ public final class StreamUtil {
 					public void run() {
 						if ( webImage == null || webImage.getWidth() != width || webImage.getHeight() != height )
 							webImage = new WritableImage(width, height);
-
+                                                
 						webView.snapshot(new Callback<SnapshotResult, Void>() {
 							public Void call(final SnapshotResult snapshotResult) {
 								snapshotResult.getImage().getPixelReader().getPixels(0, 0, width, height, PixelFormat.getByteBgraPreInstance(), buffer, stride);
