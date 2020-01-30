@@ -203,10 +203,10 @@ public final class StreamUtil {
 
 		final List<RenderStreamFactory> list = new ArrayList<RenderStreamFactory>();
 
+		addIfSupported(caps, list, RenderStreamPBODefault.FACTORY);
 		addIfSupported(caps, list, RenderStreamPBOAMD.FACTORY);
 		addIfSupported(caps, list, RenderStreamPBOCopy.FACTORY);
 		addIfSupported(caps, list, RenderStreamINTEL.FACTORY);
-		addIfSupported(caps, list, RenderStreamPBODefault.FACTORY);
 
 		return list;
 	}

@@ -130,7 +130,7 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
 		else
 			fboUtil.framebufferRenderbuffer(
 				GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER,
-				rgbaBuffer = StreamUtil.createRenderBuffer(fboUtil, width, height, samples, GL_RGBA8)
+				rgbaBuffer = StreamUtil.createRenderBuffer(fboUtil, width, height, samples, GL_RGB8)
 			);
 
 		fboUtil.framebufferRenderbuffer(
@@ -152,7 +152,7 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
 			if ( readbackType == ReadbackType.READ_PIXELS )
 				fboUtil.framebufferRenderbuffer(
 					GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER,
-					msaaResolveBuffer = StreamUtil.createRenderBuffer(fboUtil, width, height, GL_RGBA8)
+					msaaResolveBuffer = StreamUtil.createRenderBuffer(fboUtil, width, height, GL_RGB8)
 				);
 			else
 				fboUtil.framebufferTexture2D(
