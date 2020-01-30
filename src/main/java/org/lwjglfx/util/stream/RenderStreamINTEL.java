@@ -138,7 +138,7 @@ final class RenderStreamINTEL extends StreamBuffered implements RenderStream {
 
 		fboUtil.bindFramebuffer(GL_DRAW_FRAMEBUFFER, renderFBO);
 
-		rgbaBuffer = StreamUtil.createRenderBuffer(fboUtil, width, height, samples, GL_RGBA8);
+		rgbaBuffer = StreamUtil.createRenderBuffer(fboUtil, width, height, samples, GL_RGB8);
 		fboUtil.framebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rgbaBuffer);
 
 		depthBuffer = StreamUtil.createRenderBuffer(fboUtil, width, height, samples, GL_DEPTH24_STENCIL8);
