@@ -470,15 +470,25 @@ public final class StreamUtil {
 
 			private long frame;
 			private long lastUpload;
-
-			{
-				new AnimationTimer() {
-					@Override
-					public void handle(final long now) {
-						frame++;
-					}
-				}.start();
+                        {
+                            Runnable runnable = new Runnable(){
+                                @Override                                
+                                public void run() {           
+                                    new AnimationTimer() {
+                                            @Override
+                                            public void handle(final long now) {
+                                                    frame++;
+                                            }
+                                    }.start();
+                                }
+                            };
+                            if(Platform.isFxApplicationThread()){
+                                runnable.run();
+                            }else{
+                                Platform.runLater(runnable);
+                            }
                         }
+
                                     
 			public int getWidth() {
 				return (int)gearsView.getBoundsInLocal().getWidth();
@@ -514,7 +524,9 @@ public final class StreamUtil {
                                                         
 							// Upload the image to JavaFX
 							PixelWriter pw = renderImage.getPixelWriter();
-							pw.setPixels(0, 0, width, height, pw.getPixelFormat(), data, stride);
+                                                        if(data!=null){
+                                                            pw.setPixels(0, 0, width, height, pw.getPixelFormat(), data, stride);
+                                                        }
 
 //                                                        BufferedImage bf = SwingFXUtils.fromFXImage(renderImage, null);
 //                                                        try {
@@ -522,7 +534,9 @@ public final class StreamUtil {
 //                                                        } catch (IOException ex) {
 //                                                            Logger.getLogger(StreamUtil.class.getName()).log(Level.SEVERE, null, ex);
 //                                                        }
-						} finally {
+						} catch(Throwable th){
+                                                    th.printStackTrace();
+                                                }finally {
 							// Notify the render thread that we're done processing
 							signal.release();
 						}
