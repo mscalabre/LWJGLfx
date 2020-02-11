@@ -309,6 +309,7 @@ abstract class RenderStreamPBO extends StreamBufferedPBO implements RenderStream
 		if ( msaaResolveFBO != 0 )
 			fboUtil.deleteFramebuffers(msaaResolveFBO);
 		fboUtil.deleteFramebuffers(renderFBO);
+                handler.destroy();
 	}
 
 }

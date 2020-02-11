@@ -284,6 +284,7 @@ final class RenderStreamINTEL extends StreamBuffered implements RenderStream {
 		if ( resolveFBO != 0 )
 			fboUtil.deleteFramebuffers(resolveFBO);
 		fboUtil.deleteFramebuffers(renderFBO);
+                handler.destroy();
 	}
 
 }

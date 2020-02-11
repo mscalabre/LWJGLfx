@@ -548,6 +548,12 @@ public final class StreamUtil {
                                     Platform.runLater(runnable);
                                 }
 			}
+
+                    @Override
+                    public void destroy() {
+                        renderImage = null;
+                    }
+                        
 		};
 	}
 
@@ -588,6 +594,11 @@ public final class StreamUtil {
                                     Platform.runLater(runnable);
                                 }
 			}
+                        
+                        @Override
+                        public void destroy() {
+                            webImage = null;
+                        }
 		};
 	}
 

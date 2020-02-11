@@ -43,4 +43,6 @@ public interface StreamHandler {
 
 	void process(final int width, final int height, ByteBuffer data, final int stride, Semaphore signal);
 
+    public void destroy();
+
 }
