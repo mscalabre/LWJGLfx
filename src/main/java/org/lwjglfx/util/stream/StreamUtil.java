@@ -37,6 +37,7 @@ import java.lang.reflect.Modifier;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -502,31 +503,31 @@ public final class StreamUtil {
 				// This method runs in the background rendering thread
                                 Runnable runnable = new Runnable() {
 					public void run() {
-						try {
-							// If we're quitting, discard update
-							if ( !gearsView.isVisible() )
+                                    try {
+                                            // If we're quitting, discard update
+                                            if ( !gearsView.isVisible() )
 								return;
 
-							// Detect resize and recreate the image
-							if ( renderImage == null || (int)renderImage.getWidth() != width || (int)renderImage.getHeight() != height ) {
-								renderImage = new WritableImage(width, height);
-								gearsView.setImage(renderImage);
-							}
+                                            // Detect resize and recreate the image
+                                            if ( renderImage == null || (int)renderImage.getWidth() != width || (int)renderImage.getHeight() != height ) {
+                                                    renderImage = new WritableImage(width, height);
+                                                    gearsView.setImage(renderImage);
+                                            }
 
-							// Throttling, only update the JavaFX view once per frame.
-							// *NOTE*: The +1 is weird here, but apparently setPixels triggers a new pulse within the current frame.
-							// If we ignore that, we'd get a) worse performance from uploading double the frames and b) exceptions
-							// on certain configurations (e.g. Nvidia GPU with the D3D pipeline).
-							if ( frame <= lastUpload + 1 )
+                                            // Throttling, only update the JavaFX view once per frame.
+                                            // *NOTE*: The +1 is weird here, but apparently setPixels triggers a new pulse within the current frame.
+                                            // If we ignore that, we'd get a) worse performance from uploading double the frames and b) exceptions
+                                            // on certain configurations (e.g. Nvidia GPU with the D3D pipeline).
+                                            if ( frame <= lastUpload + 1 )
 								return;
 
-							lastUpload = frame;
-                                                        
-							// Upload the image to JavaFX
-							PixelWriter pw = renderImage.getPixelWriter();
-                                                        if(data!=null){
-                                                            pw.setPixels(0, 0, width, height, pw.getPixelFormat(), data, stride);
-                                                        }
+                                            lastUpload = frame;
+
+                                            // Upload the image to JavaFX
+                                            PixelWriter pw = renderImage.getPixelWriter();
+                                            if(data!=null){
+                                                pw.setPixels(0, 0, width, height, pw.getPixelFormat(), data, stride);
+                                            }
 
 //                                                        BufferedImage bf = SwingFXUtils.fromFXImage(renderImage, null);
 //                                                        try {
@@ -534,18 +535,20 @@ public final class StreamUtil {
 //                                                        } catch (IOException ex) {
 //                                                            Logger.getLogger(StreamUtil.class.getName()).log(Level.SEVERE, null, ex);
 //                                                        }
-						} catch(Throwable th){
-                                                    th.printStackTrace();
-                                                }finally {
-							// Notify the render thread that we're done processing
-							signal.release();
-						}
+                                    } catch(Throwable th){
+                                        th.printStackTrace();
+                                    }finally {
+                                            // Notify the render thread that we're done processing
+                                            signal.release();
+                                    }
 					}
 				};
                                 if(Platform.isFxApplicationThread()){
                                     runnable.run();
                                 }else{
-                                    Platform.runLater(runnable);
+                                    Platform.runLater(()->{
+                                        runnable.run();
+                                    });
                                 }
 			}
 
