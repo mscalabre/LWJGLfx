@@ -470,16 +470,17 @@ public final class StreamUtil {
 
 			private long frame;
 			private long lastUpload;
+                        private AnimationTimer animationTimer = new AnimationTimer() {
+                                @Override
+                                public void handle(final long now) {
+                                        frame++;
+                                }
+                        };
                         {
                             Runnable runnable = new Runnable(){
                                 @Override                                
                                 public void run() {           
-                                    new AnimationTimer() {
-                                            @Override
-                                            public void handle(final long now) {
-                                                    frame++;
-                                            }
-                                    }.start();
+                                    animationTimer.start();
                                 }
                             };
                             if(Platform.isFxApplicationThread()){
@@ -553,6 +554,8 @@ public final class StreamUtil {
 
                     @Override
                     public void destroy() {
+                        animationTimer.stop();
+                        animationTimer = null;
                         renderImage = null;
                     }
                         
